@@ -1,0 +1,47 @@
+
+{% extends 'templates/default.twig' %}
+
+{% block title %} {{ item.name }} {% endblock %}
+
+{% block current %} Beranda > Item {% endblock %}
+
+ {% block content %}
+ <div class="container-fluid">
+     <div class="row-fluid">
+         <div style="padding:10px; background:#fff;"class="span12">
+             <div class="widget-title"> <span class="icon"> <i class="icon-file"></i> </span>
+                <br>
+             </div>
+             <ul class="recent-posts">
+
+                 <li>
+                     {% if item.image != null %}
+                     <div class="user-thumb"> <img width="40" height="40" alt="User"
+                         src="{{ base_url() }}/assets/images/{{ item.image }}">
+                     </div>
+                     {% else %}
+                     <div class="user-thumb"> <img width="40" height="40" alt="User"
+                         src="{{ base_url() }}/assets/images/avatar.png">
+                     </div>
+                     {% endif %}
+                     <div class="article-post">
+                         <span class="user-info"> <b> {{ item.name }} </b> <br>
+                              {{ item.created_at }}
+                         </span><br><br>
+                         <p> {{ item.description }} </p>
+                     </div>
+                 </li>
+             </ul>
+             <br>
+             <div class="chat-message well">
+                 <span class="input-box">
+                     <input type="text" name="msg-box" style="width:80%" id="msg-box" />
+                     <button class="btn btn-success">Kirim komentar</button>
+                 </span>
+             </div>
+         </div>
+     </div>
+ </div>
+
+
+ {% endblock %}

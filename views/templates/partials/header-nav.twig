@@ -1,0 +1,66 @@
+<nav style="background:#; color:#f99d1b; margin-bottom:0px;" class="navbar navbar-default" >
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">ReportingApp</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav hidden-lg">
+        <li class="active"><a href="index.html">Dashboard</a></li>
+        <li><a href="pages.html">Pages</a></li>
+        <li><a href="posts.html">Posts</a></li>
+        <li><a href="users.html">Users</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Welcome, {{ login.name}}</a></li>
+        <li class="dropdown user user-menu">
+
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <img src="{{ base_url() }}/assets/images/{{ login.image }}" class="user-image" alt="User Image">
+                <!-- <span class="hidden-xs">{{login.name}}</span> -->
+            </a>
+            <ul class="dropdown-menu">
+                <!-- User image -->
+                <li class="user-header">
+                    <img src="{{ base_url() }}/assets/images/{{ login.image }}" class="img-circle" alt="User Image">
+                    <p>
+                        {{login.name}}
+                        <small>Terdaftar sejak {{ login.created_at | date("m-d-Y") }}</small>
+                    </p>
+                </li>
+                <!-- Menu Body -->
+                <li class="user-body">
+                    <div class="row">
+                        <div class="col-xs-4 text-center">
+                            <a href="#">Item</a>
+                        </div>
+                        <div class="col-xs-4 text-center">
+                            <a href="#">Grup</a>
+                        </div>
+                        <div class="col-xs-4 text-center">
+                            <a href="">Pengaturan</a>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </li>
+                <!-- Menu Footer-->
+                <li class="user-footer">
+                    <div class="pull-left">
+                        <a href="{{path_for('user.profile')}}" class="btn btn-default btn-flat">Profil</a>
+                    </div>
+                    <div class="pull-right">
+                        <a href="{{path_for('logout')}}" class="btn btn-default btn-flat">Keluar</a>
+                    </div>
+                </li>
+            </ul>
+        </li>
+        <!-- <li><a href="login.html">Logout</a></li> -->
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>

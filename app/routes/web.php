@@ -7,7 +7,8 @@ $app->get('/activateaccount/{token}', 'App\Controllers\web\UserController:activa
 $app->get('/admin', 'App\Controllers\web\UserController:getLoginAsAdmin')->setName('login.admin');
 $app->post('/admin', 'App\Controllers\web\UserController:loginAsAdmin');
 $app->get('/user', 'App\Controllers\web\UserController:getAllUser');
-$app->post('/', 'App\Controllers\web\UserController:login');
+$app->get('/', 'App\Controllers\web\UserController:getLogin')->setName('login');
+$app->post('/', 'App\Controllers\web\UserController:login')->setName('post.login');
 
 $app->group('', function() use ($app, $container) {
     $app->get('/home', 'App\Controllers\web\HomeController:index')->setName('home');

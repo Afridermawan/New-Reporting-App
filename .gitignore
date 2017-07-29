@@ -6,4 +6,4 @@ docker-compose.yml
 phinx.yml
 composer.lock
 Dockerfile
-views/
+views0/
