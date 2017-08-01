@@ -1,5 +1,5 @@
 <?php
-
+ 
 namespace App\Controllers\api;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -89,7 +89,7 @@ class GroupController extends BaseController
 			$post['creator'] = $userToken->getUserId($token);
 			$query = $request->getQueryParams();
 			$group = new \App\Models\GroupModel($this->db);
-			$addGroup = $group->add($post, $imageName);
+			$addGroup = $group->add($post);
 
 			$findNewGroup = $group->find('id', $addGroup);
 
@@ -139,7 +139,7 @@ class GroupController extends BaseController
 			$group->hardDelete($args['id']);
 			$data = $this->responseDetail(200, 'Berhasil menghapus data');
 		} else {
-			$data = $this->responseDetail(404, 'Error', 'Data tidak ditemukan');
+			$data = $this->responseDetail(404, 'Data tidak ditemukan');
 		}
 
 		return $data;
@@ -191,8 +191,8 @@ class GroupController extends BaseController
 		$finduserGroup = $userGroup->findUsers('group_id', $args['group']);
 		$token = $request->getHeader('Authorization')[0];
 		$findUser = $userToken->find('token', $token);
-		$group = $userGroup->findUser('user_id', $findUser['user_id'], 'group_id', $args['group']);
-		$user = $users->find('id', $findUser['user_id']);
+		$group = $userGroup->findUser('user_id', $findUser, 'group_id', $args['group']);
+		$user = $users->find('id', $findUser);
 		$query = $request->getQueryParams();
 
 		if ($group) {
@@ -201,7 +201,7 @@ class GroupController extends BaseController
 
 				$findAll = $userGroup->findAll($args['group'])->setPaginate($page, 10);
 
-				$data = $this->responseDetail(200, 'Berhasil', [
+				$data = $this->responseDetail(200, 'Berhasil menampilkan data', [
 					'query'		=>	$query,
 					'result'	=>	$findAll
 				]);
@@ -236,7 +236,7 @@ class GroupController extends BaseController
 
 		if ($group) {
 			if ($finduserGroup) {
-				$data = $this->responseDetail(200, 'Berhasil', [
+				$data = $this->responseDetail(200, 'Berhasil menampilkan data', [
 					'query'		=>	$query,
 					'result'	=>	$getUser
 				]);
@@ -254,21 +254,35 @@ class GroupController extends BaseController
 		return $data;
 	}
 
-	//Delete user from group
+	//Delete user from group 
 	public function deleteUser(Request $request, Response $response, $args)
 	{
 		$userGroup = new \App\Models\UserGroupModel($this->db);
+		$users = new \App\Models\Users\UserModel($this->container->db);
+		$userToken = new \App\Models\Users\UserToken($this->container->db);
+		
+		$token = $request->getHeader('Authorization')[0];
+		$findUser = $userToken->find('token', $token);
+
 		$finduserGroup = $userGroup->findUser('user_id', $args['id'], 'group_id', $args['group']);
-		$finduserGroup = $userGroup->find('user_id', $args['id']);
+		$group = $userGroup->findUser('user_id', $findUser['user_id'], 'group_id', $args['group']);
+
+		$finduser = $userGroup->find('user_id', $args['id']);
+		$user = $users->find('id', $findUser['user_id']);
 		$query = $request->getQueryParams();
 
-		if ($finduserGroup) {
-			$userGroup->hardDelete($finduserGroup['id']);
+		if ($group) {
+			if ($finduser) {
+				$userGroup->hardDelete($finduserGroup['id']);
 
-			$data = $this->responseDetail(200, 'User berhasil dihapus dari group', [
-					'query'		=>	$query,
-					'result'	=>	$userGroup
-				]);
+				$data = $this->responseDetail(200, 'User berhasil dihapus dari group', [
+						'query'		=>	$query,
+						'result'	=>	$userGroup
+					]);
+			} else {
+				$data = $this->responseDetail(400, 'Anda tidak memiliki hak akses');
+			}
+
 		} else {
 			$data = $this->responseDetail(404, 'Data tidak ditemukan', [
 					'query'		=>	$query
@@ -336,7 +350,7 @@ class GroupController extends BaseController
 
 			$data = $this->responseDetail(200, 'User berhasil dijadikan Guardian', [
 					'query'		=>	$query,
-					'result'	=>	$result
+					'result'	=>	$finduserGroup
 				]);
 		} else {
 			$data = $this->responseDetail(404, 'User tidak ditemukan di dalam group', [
@@ -400,6 +414,7 @@ class GroupController extends BaseController
 
 		return $data;
 	}
+	
 	//Set user as member of group
 	public function joinGroup(Request $request, Response $response, $args)
 	{
@@ -411,7 +426,7 @@ class GroupController extends BaseController
 
 		$findUser = $userGroup->finds('user_id', $userId, 'group_id', $args['id']);
 
-		$data = [
+		$data = [	
 			'group_id' 	=> 	$args['id'],
 			'user_id'	=>	$userId,
 		];
@@ -549,7 +564,6 @@ class GroupController extends BaseController
     public function getPicGroup($request, $response)
 	{
 		$userGroup = new \App\Models\UserGroupModel($this->db);
-
 		$token = $request->getHeader('Authorization')[0];
 		$userToken = new \App\Models\Users\UserToken($this->db);
 		$userId = $userToken->getUserId($token);
@@ -615,7 +629,6 @@ class GroupController extends BaseController
 		$getGroup = $userGroup->findAllUser($userId);
 		$query = $request->getQueryParams();
 
-	// var_dump($userId);die();
 		if ($getGroup) {
 			return $this->responseDetail(200, 'Berhasil menampilkan data', [
 				'query'		=>	$query,
@@ -665,8 +678,6 @@ class GroupController extends BaseController
 		$users = $userGroup->notMember($args['id'])->setPaginate($page, 5);
 		$pic = $userGroup->findUser('group_id', $args['id'], 'user_id', $userId);
 		$query = $request->getQueryParams();
-		// ->setPaginate($page, 5)
-		// var_dump($users);die();
 
 		if ($userId == 1 || $pic['status'] == 1) {
 			return $this->responseDetail(200, 'Berhasil menampilkan data', [
@@ -739,7 +750,7 @@ class GroupController extends BaseController
 
 		$userId = $request->getParams()['user_id'];
 		$groupId = $request->getParams()['group_id'];
-		// $pic = $userGroups->finds('group_id', $groupId, 'user_id', $user);
+		$pic = $userGroups->finds('group_id', $groupId, 'user_id', $user);
 		$userGroup = $userGroups->finds('group_id', $groupId, 'user_id', $userId);
 
 		if (!$userGroup) {
@@ -764,14 +775,14 @@ class GroupController extends BaseController
 			return $this->responseDetail(400, 'Member sudah tergabung!');
 		}
 
-	// 	if ($user == 2 && $pic[0]['status'] == 1) {
-	// 		return $response->withRedirect($this->router
-	// 		->pathFor('pic.member.group.get', ['id' => $groupId]));
+		if ($user == 2 && $pic[0]['status'] == 1) {
+			return $response->withRedirect($this->router
+			->pathFor('pic.member.group.get', ['id' => $groupId]));
 
-	// 	} else {
-	// 		return $response->withRedirect($this->router
-	// 		->pathFor('user.group.get', ['id' => $groupId]));
-	// 	}
+		} else {
+			return $response->withRedirect($this->router
+			->pathFor('user.group.get', ['id' => $groupId]));
+		}
 	}
 
 	//Set user as member or PIC of group

@@ -55,10 +55,9 @@ $container['flash'] = function ($container) {
 
 $container['client'] = function ($container) {
     $settings = $container->get('settings')['reporting'];
-
     return new GuzzleHttp\Client([
         'base_uri' => 'http://localhost/Reporting-App/public/api/',
-        'headers'  => $settings['headers']
+        'headers'  => $settings['headers'],
     ]);
 };
 

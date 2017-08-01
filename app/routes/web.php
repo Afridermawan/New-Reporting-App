@@ -9,6 +9,7 @@ $app->post('/admin', 'App\Controllers\web\UserController:loginAsAdmin');
 $app->get('/user', 'App\Controllers\web\UserController:getAllUser');
 $app->get('/', 'App\Controllers\web\UserController:getLogin')->setName('login');
 $app->post('/', 'App\Controllers\web\UserController:login')->setName('post.login');
+$app->get('/test', 'App\Controllers\web\GroupController:test')->setName('post.test');
 
 $app->group('', function() use ($app, $container) {
     $app->get('/home', 'App\Controllers\web\HomeController:index')->setName('home');
@@ -20,20 +21,51 @@ $app->group('', function() use ($app, $container) {
     $app->group('/admin', function() use ($app, $container) {
 
         $app->group('/group', function(){
-            $this->get('', 'App\Controllers\web\GroupController:index')->setName('group.list');
-            $this->get('/inactive', 'App\Controllers\web\GroupController:inActive')->setName('group.inactive');
-            $this->get('/detail/{id}', 'App\Controllers\web\GroupController:findGroup')->setName('group.detail');
-            $this->get('/create', 'App\Controllers\web\GroupController:getAdd')->setName('create.group.get');
-            $this->post('/create', 'App\Controllers\web\GroupController:add')->setName('create.group.post');
-            $this->get('/edit/{id}', 'App\Controllers\web\GroupController:getUpdate')->setName('edit.group.get');
-            $this->post('/edit/{id}', 'App\Controllers\web\GroupController:update')->setName('edit.group.post');
-            $this->post('/active', 'App\Controllers\web\GroupController:setInactive')->setName('group.set.inactive');
-            $this->post('/inactive', 'App\Controllers\web\GroupController:setActive')->setName('group.set.active');
-            $this->get('/{id}/users', 'App\Controllers\web\GroupController:getMemberGroup')->setName('user.group.get');
-            $this->post('/users', 'App\Controllers\web\GroupController:setUserGroup')->setName('user.group.set');
-            $this->get('/{id}/allusers', 'App\Controllers\web\GroupController:getNotMember')->setName('all.users.get');
-            $this->post('/allusers', 'App\Controllers\web\GroupController:setMemberGroup')->setName('member.group.set');
-            $this->get('/{id}/item', 'App\Controllers\web\ItemController:getItemInGroup')->setName('get.group.item');
+            $this->get('/delete/{id}', 'App\Controllers\web\GroupController:delete')
+                ->setName('group.delete');
+            $this->get('/list', 'App\Controllers\web\GroupController:index')
+                ->setName('group.list');
+            $this->get('/inactive', 'App\Controllers\web\GroupController:inActive')
+                ->setName('group.inactive');
+            $this->get('/detail/{id}', 'App\Controllers\web\GroupController:findGroup')
+                ->setName('group.detail');
+            // $this->get('/create', 'App\Controllers\web\GroupController:getAdd')->setName('create.group.get');
+            $this->get('/create', 'App\Controllers\web\GroupController:add')
+                ->setName('create.group.post');
+            $this->get('/edit/{id}', 'App\Controllers\web\GroupController:getUpdate')
+                ->setName('edit.group.get');
+            $this->post('/edit/{id}', 'App\Controllers\web\GroupController:update')
+                ->setName('edit.group.post');
+            $this->get('/active/{id}', 'App\Controllers\web\GroupController:setInactive')
+                ->setName('group.set.inactive');
+            $this->post('/inactive', 'App\Controllers\web\GroupController:setActive')
+                ->setName('group.set.active');
+            $this->get('/{id}/users', 'App\Controllers\web\GroupController:getMemberGroup')
+                ->setName('user.group.get');
+            $this->post('/users', 'App\Controllers\web\GroupController:setUserGroup')
+                ->setName('user.group.set');
+            $this->get('/{id}/users/notMember', 'App\Controllers\web\GroupController:getNotMember')
+                ->setName('all.users.get');
+            $this->get('/addusers', 'App\Controllers\web\GroupController:setMemberGroup')
+                ->setName('member.group.set');
+            $this->get('/{id}/item', 'App\Controllers\web\ItemController:getItemInGroup')
+                ->setName('get.group.item');
+            $this->get('/restore/{id}', 'App\Controllers\web\GroupController:restore')
+                ->setName('web.group.restore');
+            $this->get('/set/guardian/{id}/{group}', 'App\Controllers\web\GroupController:setAsGuardian')
+                ->setName('web.set.guardian');
+            $this->get('/set/member/{id}/{group}', 'App\Controllers\web\GroupController:setAsMember')
+                ->setName('web.set.member');
+            $this->get('/set/pic/{id}/{group}', 'App\Controllers\web\GroupController:setAsPic')
+                ->setName('web.set.pic');
+            $this->get('/{group}/{id}', 'App\Controllers\web\GroupController:getUserGroup')
+                ->setName('api.get.user.group');
+            $this->get('/{group}/allusers', 'App\Controllers\web\GroupController:getAllUserGroup')
+                ->setName('api.getAllUserGroup');
+            $this->get('/delete/user/{group}/{id}', 'App\Controllers\web\GroupController:deleteUser')
+                ->setName('web.delete.user.group');
+            $this->post('/change/photo/{id}', 'App\Controllers\web\GroupController:postImage')
+                ->setName('web.change.photo.group');
         });
 
         $app->group('/user', function(){
@@ -86,7 +118,7 @@ $app->group('', function() use ($app, $container) {
     $app->group('/pic', function(){
         $this->get('/group', 'App\Controllers\web\GroupController:getPicGroup')
         ->setName('pic.group');
-        $this->post('/create', 'App\Controllers\web\GroupController:createByUser')
+        $this->get('/create', 'App\Controllers\web\GroupController:createByUser')
         ->setName('pic.create.group');
         $this->get('/group/{id}/item', 'App\Controllers\web\ItemController:getItemInGroup')
         ->setName('pic.item.group');
@@ -136,7 +168,7 @@ $app->group('', function() use ($app, $container) {
         ->setName('post.group.search');
         $this->get('/group/add/{id}', 'App\Controllers\web\GroupController:joinGroup')
         ->setName('post.group.add');
-        $this->get('/group/{id}/del', 'App\Controllers\web\GroupController:leaveGroup')
+        $this->get('/group/{id}/leave', 'App\Controllers\web\GroupController:leaveGroup')
         ->setName('get.del.group');
         $this->get('/group/{id}/item', 'App\Controllers\web\UserController:getItemsUser')
         ->setName('user.item.group');
@@ -192,4 +224,4 @@ $app->group('', function() use ($app, $container) {
         $this->post('/user/search', 'App\Controllers\web\UserController:searchUser')->setName('post.user.search');
     });
     // ->add(new \App\Middlewares\web\GuardMiddleware($container));
-})->add(new \App\Middlewares\web\AuthMiddleware($container));
+});
