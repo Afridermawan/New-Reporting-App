@@ -151,8 +151,7 @@ class GroupController extends BaseController
 		$rules = [
 			'required' => [
 				['group_id'],
-				['user_id'],
-				['status']
+				['user_id']
 			]
 		];
 
@@ -775,51 +774,13 @@ class GroupController extends BaseController
 			return $this->responseDetail(400, 'Member sudah tergabung!');
 		}
 
-		if ($user == 2 && $pic[0]['status'] == 1) {
-			return $response->withRedirect($this->router
-			->pathFor('pic.member.group.get', ['id' => $groupId]));
+		// if ($user == 2 && $pic[0]['status'] == 1) {
+		// 	return $response->withRedirect($this->router
+		// 	->pathFor('pic.member.group.get', ['id' => $groupId]));
 
-		} else {
-			return $response->withRedirect($this->router
-			->pathFor('user.group.get', ['id' => $groupId]));
-		}
-	}
-
-	//Set user as member or PIC of group
-	public function setUserGroup($request, $response)
-	{
-		$userGroup = new UserGroupModel($this->db);
-		$groupId = $request->getParams()['id'];
-		$pic = $userGroup->findUser('group_id', $groupId, 'user_id', $_SESSION['login']['id']);
-// var_dump($request->getParam('user'));die();
-		if ($_SESSION['login']['status'] == 1 || $pic['status'] == 1) {
-			if (!empty($request->getParams()['pic'])) {
-				foreach ($request->getParam('user') as $key => $value) {
-					$finduserGroup = $userGroup->findUser('user_id', $value, 'group_id', $groupId);
-					$userGroup->setPic($finduserGroup['id']);
-				}
-			} elseif (!empty($request->getParams()['member'])) {
-				foreach ($request->getParam('user') as $key => $value) {
-					$finduserGroup = $userGroup->findUser('user_id', $value, 'group_id', $groupId);
-					$userGroup->setUser($finduserGroup['id']);
-				}
-			} elseif (!empty($request->getParams()['delete'])) {
-				foreach ($request->getParam('user') as $key => $value) {
-					$finduserGroup = $userGroup->findUser('user_id', $value, 'group_id', $groupId);
-					$userGroup->hardDelete($finduserGroup['id']);
-				}
-			}
-
-			if ($_SESSION['login']['status'] == 2 && $pic['status'] == 1) {
-				return $response->withRedirect($this->router->pathFor('pic.member.group.get', ['id' => $groupId]));
-			}
-
-			return $response->withRedirect($this->router->pathFor('user.group.get', ['id' => $groupId]));
-
-		} else {
-			$this->flash->addMessage('error', 'Anda tidak memiliki akses ke user ini!');
-			return $response->withRedirect($this->router
-			->pathFor('home'));
-		}
+		// } else {
+		// 	return $response->withRedirect($this->router
+		// 	->pathFor('user.group.get', ['id' => $groupId]));
+		// }
 	}
 }

@@ -136,39 +136,22 @@ class GroupController extends BaseController
 	//Set user as member or PIC of group
 	public function setUserGroup($request, $response)
 	{
-		$userGroup = new UserGroupModel($this->db);
-		$groupId = $request->getParams()['id'];
-		$pic = $userGroup->findUser('group_id', $groupId, 'user_id', $_SESSION['login']['id']);
-// var_dump($request->getParam('user'));die();
-		if ($_SESSION['login']['status'] == 1 || $pic['status'] == 1) {
-			if (!empty($request->getParams()['pic'])) {
-				foreach ($request->getParam('user') as $key => $value) {
-					$finduserGroup = $userGroup->findUser('user_id', $value, 'group_id', $groupId);
-					$userGroup->setPic($finduserGroup['id']);
-				}
-			} elseif (!empty($request->getParams()['member'])) {
-				foreach ($request->getParam('user') as $key => $value) {
-					$finduserGroup = $userGroup->findUser('user_id', $value, 'group_id', $groupId);
-					$userGroup->setUser($finduserGroup['id']);
-				}
-			} elseif (!empty($request->getParams()['delete'])) {
-				foreach ($request->getParam('user') as $key => $value) {
-					$finduserGroup = $userGroup->findUser('user_id', $value, 'group_id', $groupId);
-					$userGroup->hardDelete($finduserGroup['id']);
-				}
-			}
-
-			if ($_SESSION['login']['status'] == 2 && $pic['status'] == 1) {
-				return $response->withRedirect($this->router->pathFor('pic.member.group.get', ['id' => $groupId]));
-			}
-
-			return $response->withRedirect($this->router->pathFor('user.group.get', ['id' => $groupId]));
-
-		} else {
-			$this->flash->addMessage('error', 'Anda tidak memiliki akses ke user ini!');
-			return $response->withRedirect($this->router
-			->pathFor('home'));
+		$data = [
+				'group_id' 			=>	$request->getParams()['group_id'],
+				'user_id'			=>	$request->getParams()['user_id']
+			];
+		try {
+			$client = $this->client->request('POST',
+						$this->router->pathFor('api.user.add.group'), [
+					'json' => $data
+			]);
+			$client = $client->getBody()->getContents();
+			$content = json_decode($client);
+		} catch (GuzzleException $e) {
+			$content = json_decode($e->getResponse()->getBody()->getContents());
 		}
+
+		return $this->router->pathFor('user.group.get', ['id' => $groupId]);
 	}
 
 	//Get all user in group
@@ -364,7 +347,8 @@ class GroupController extends BaseController
 	{
 		try {
 			$client = $this->client->request('PUT', 
-						$this->router->pathFor('api.user.set.guardian', ['group' => $args['group'], 'id' => $args['id']]));
+						$this->router->pathFor('api.user.set.guardian', 
+								['group' => $args['group'], 'id' => $args['id']]));
 			$client = $client->getBody()->getContents();
 			$content = json_decode($client);
 		} catch (GuzzleException $e) {
@@ -380,7 +364,8 @@ class GroupController extends BaseController
 	{
 		try {
 			$client = $this->client->request('PUT', 
-						$this->router->pathFor('api.user.set.member', ['id' => $args['id'], 'group' => $args['group']]));
+						$this->router->pathFor('api.user.set.member', 
+								['id' => $args['id'], 'group' => $args['group']]));
 			$client = $client->getBody()->getContents();
 			$content = json_decode($client);
 		} catch (GuzzleException $e) {
@@ -396,7 +381,8 @@ class GroupController extends BaseController
 	{
 		try {
 			$client = $this->client->request('PUT', 
-						$this->router->pathFor('api.user.set.pic', ['id' => $args['id'], 'group' => $args['group']]));
+						$this->router->pathFor('api.user.set.pic', 
+								['id' => $args['id'], 'group' => $args['group']]));
 			$client = $client->getBody()->getContents();
 			$content = json_decode($client);
 		} catch (GuzzleException $e) {
@@ -412,7 +398,8 @@ class GroupController extends BaseController
 	{
 		try {
 			$client = $this->client->request('POST', 
-						$this->router->pathFor('api.delete.user.group', ['group' => $args['group'], 'id' => $args['id']]));
+						$this->router->pathFor('api.delete.user.group', 
+								['group' => $args['group'], 'id' => $args['id']]));
 			$client = $client->getBody()->getContents();
 			$content = json_decode($client);
 		} catch (GuzzleException $e) {
@@ -428,7 +415,8 @@ class GroupController extends BaseController
 	{
 		try {
 			$client = $this->client->request('POST', 
-						$this->router->pathFor('api.change.photo.group', ['id' => $args['id']]));
+						$this->router->pathFor('api.change.photo.group', 
+								['id' => $args['id']]));
 			$client = $client->getBody()->getContents();
 			$content = json_decode($client);
 		} catch (GuzzleException $e) {

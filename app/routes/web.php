@@ -42,8 +42,8 @@ $app->group('', function() use ($app, $container) {
                 ->setName('group.set.active');
             $this->get('/{id}/users', 'App\Controllers\web\GroupController:getMemberGroup')
                 ->setName('user.group.get');
-            $this->post('/users', 'App\Controllers\web\GroupController:setUserGroup')
-                ->setName('user.group.set');
+            $this->post('/add/user', 'App\Controllers\web\GroupController:setUserGroup')
+                ->setName('web.user.add.group');
             $this->get('/{id}/users/notMember', 'App\Controllers\web\GroupController:getNotMember')
                 ->setName('all.users.get');
             $this->get('/addusers', 'App\Controllers\web\GroupController:setMemberGroup')
